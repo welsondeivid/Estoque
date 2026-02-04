@@ -1,4 +1,4 @@
-package com.estoque.entity;
+package com.stock.raw;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.Column;
@@ -6,13 +6,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-
-import java.math.BigDecimal;
 
 @Entity
-@Table(name = "product")
-public class Product extends PanacheEntityBase {
+@Table(name = "raw_material")
+public class RawMaterial extends PanacheEntityBase{
 
     @Id
     @NotNull
@@ -25,6 +22,5 @@ public class Product extends PanacheEntityBase {
 
     @NotNull
     @Column(nullable = false)
-    @Positive
-    public BigDecimal price;
+    public int amount;
 }

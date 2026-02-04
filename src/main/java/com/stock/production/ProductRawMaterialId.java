@@ -1,4 +1,4 @@
-package com.estoque.entity;
+package com.stock.production;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;

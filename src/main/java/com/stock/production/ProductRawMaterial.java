@@ -1,4 +1,4 @@
-package com.estoque.entity;
+package com.stock.production;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.EmbeddedId;
