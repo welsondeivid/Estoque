@@ -21,3 +21,7 @@ boas práticas de arquitetura e APIs REST performáticas.
 
 A aplicação sobe em:<br>
 API: http://localhost:8080<br>
+
+## Front-end
+O front-end deste sistema está disponível em:<br>
+https://github.com/seu-usuario/estoque-frontend
