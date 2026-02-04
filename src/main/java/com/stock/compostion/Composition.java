@@ -1,4 +1,4 @@
-package com.stock.production;
+package com.stock.compostion;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import jakarta.persistence.EmbeddedId;
@@ -9,11 +9,11 @@ import jakarta.validation.constraints.Positive;
 
 @Entity
 @Table(name = "product_raw_material")
-public class Production extends PanacheEntityBase{
+public class Composition extends PanacheEntityBase{
 
     @EmbeddedId
     @NotNull
-    public ProductionId id;
+    public CompositionId id;
 
     @NotNull
     @Positive

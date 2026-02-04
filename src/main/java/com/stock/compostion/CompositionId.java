@@ -1,4 +1,4 @@
-package com.stock.production;
+package com.stock.compostion;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class ProductionId implements Serializable {
+public class CompositionId implements Serializable {
 
     @NotNull
     @Column(nullable = false, name = "product_code", length = 20)
@@ -21,8 +21,8 @@ public class ProductionId implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof ProductionId)) return false;
-        ProductionId that = (ProductionId) o;
+        if (!(o instanceof CompositionId)) return false;
+        CompositionId that = (CompositionId) o;
         return Objects.equals(productCode, that.productCode) &&
                 Objects.equals(rawMaterialCode, that.rawMaterialCode);
     }

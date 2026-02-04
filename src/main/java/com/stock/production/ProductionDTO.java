@@ -1,13 +1,13 @@
 package com.stock.production;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import java.math.BigDecimal;
 
 public class ProductionDTO {
 
-    @NotNull
-    public String rawMaterialCode;
+    public String productCode;
+    public String productName;
 
-    @Positive
-    public int required;
+    public int maxProduction;
+    public BigDecimal unitValue;
+    public BigDecimal totalValue;
 }

@@ -1,73 +1,77 @@
 package com.stock.production;
 
-import com.stock.product.ProductService;
-import com.stock.raw.RawMaterialService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.NotFoundException;
-import jakarta.ws.rs.WebApplicationException;
-import org.jspecify.annotations.NonNull;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @ApplicationScoped
 public class ProductionService {
 
     @Inject
     ProductionRepository productionRepository;
-    @Inject
-    ProductService productService;
-    @Inject
-    RawMaterialService rawMaterialService;
 
-    public List<Production> listByProduct(String productCode) {
-        return productionRepository.findByProduct(productCode);
-    }
+    public List<ProductionDTO> availableProducts() {
 
-    @Transactional
-    public List<Production> defineComposition(String productCode, List<ProductionDTO> materials) {
-        if (materials.isEmpty()) throw new WebApplicationException("Materials list cannot be empty", 400);
+        List<StockDTO> stockData = productionRepository.availableProducts();
 
-        productService.findByCode(productCode);
-        List<Production> result = new ArrayList<>();
+        Map<String, ProductionAccumulator> accMap = new java.util.HashMap<>();
 
-        productionRepository.deleteByProduct(productCode);
+        for (StockDTO s : stockData) {
 
-        for (ProductionDTO dto : materials) {
+            ProductionAccumulator acc =
+                    accMap.computeIfAbsent(s.productCode, k ->
+                            new ProductionAccumulator(
+                                    s.productCode,
+                                    s.productName,
+                                    s.unitValue
+                            )
+                    );
 
-            rawMaterialService.findByCode(dto.rawMaterialCode);
-
-            Production production = productionRepository.findByCodes(productCode, dto.rawMaterialCode);
-            if (production != null) {
-                production.required = dto.required;
-                result.add(production);
-                continue;
-            }
-
-            ProductionId id = new ProductionId();
-            id.productCode = productCode;
-            id.rawMaterialCode = dto.rawMaterialCode;
-
-            Production newProduction = new Production();
-            newProduction.id = id;
-            newProduction.required = dto.required;
-
-            productionRepository.persist(newProduction);
-            result.add(newProduction);
+            int possible = s.stock / s.required;
+            acc.maxProduction = Math.min(acc.maxProduction, possible);
         }
 
-        return result;
+        return accMap.values().stream()
+                .filter(a -> a.maxProduction > 0)
+                .sorted((a, b) -> b.totalValue().compareTo(a.totalValue()))
+                .map(ProductionAccumulator::toDTO)
+                .toList();
+    }
+}
+
+class ProductionAccumulator {
+
+    String productCode;
+    String productName;
+    BigDecimal unitValue;
+    int maxProduction = Integer.MAX_VALUE;
+
+    ProductionAccumulator(
+            String productCode,
+            String productName,
+            BigDecimal unitValue
+    ) {
+        this.productCode = productCode;
+        this.productName = productName;
+        this.unitValue = unitValue;
     }
 
-    @Transactional
-    public void delete(String productCode, String rawMaterialCode) {
+    BigDecimal totalValue() {
+        return unitValue.multiply(BigDecimal.valueOf(maxProduction));
+    }
 
-        Production production = productionRepository.findByCodes(productCode, rawMaterialCode);
-
-        if (production == null) throw new NotFoundException("Association not found");
-
-        productionRepository.delete(production);
+    ProductionDTO toDTO() {
+        ProductionDTO dto = new ProductionDTO();
+        dto.productCode = productCode;
+        dto.productName = productName;
+        dto.unitValue = unitValue;
+        dto.maxProduction = maxProduction;
+        dto.totalValue = totalValue();
+        return dto;
     }
 }

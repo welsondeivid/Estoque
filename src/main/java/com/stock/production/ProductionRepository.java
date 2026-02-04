@@ -1,43 +1,29 @@
 package com.stock.production;
 
-import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.persistence.EntityManager;
 
 import java.util.List;
 
 @ApplicationScoped
-public class ProductionRepository
-        implements PanacheRepository<Production> {
+public class ProductionRepository {
 
-    public Production findByCodes(String productCode, String rawMaterialCode) {
-        return find(
-                "id.productCode = ?1 and id.rawMaterialCode = ?2",
-                productCode,
-                rawMaterialCode
-        ).firstResult();
-    }
+    @Inject
+    EntityManager em;
 
-    public List<Production> findByProduct(String productCode) {
-        return list("id.productCode", productCode);
-    }
-
-    public List<Production> findByRawMaterial(String rawMaterialCode) {
-        return list("id.rawMaterialCode", rawMaterialCode);
-    }
-
-    public boolean exists(String productCode, String rawMaterialCode) {
-        return count(
-                "id.productCode = ?1 and id.rawMaterialCode = ?2",
-                productCode,
-                rawMaterialCode
-        ) > 0;
-    }
-
-    public void deleteByProduct(String productCode) {
-        delete("id.productCode", productCode);
-    }
-
-    public void deleteByRawMaterial(String rawMaterialCode) {
-        delete("id.rawMaterialCode", rawMaterialCode);
+    public List<StockDTO> availableProducts(){
+        return em.createQuery("""
+            SELECT new com.stock.production.StockDTO(
+                p.code,
+                p.name,
+                p.price,
+                rm.amount,
+                c.required
+            )
+            FROM Product p
+            JOIN Composition c ON c.id.productCode = p.code
+            JOIN RawMaterial rm ON rm.code = c.id.rawMaterialCode
+        """, StockDTO.class).getResultList();
     }
 }
