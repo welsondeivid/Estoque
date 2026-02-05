@@ -1,4 +1,4 @@
-# Estoque
+# Estoque Back-end
 
 Backend de controle de estoque desenvolvido em Java com Quarkus,
 focado em organização de código,
@@ -24,4 +24,4 @@ API: http://localhost:8080<br>
 
 ## Front-end
 O front-end deste sistema está disponível em:<br>
-https://github.com/seu-usuario/estoque-frontend
+https://github.com/welsondeivid/stock-frontend
