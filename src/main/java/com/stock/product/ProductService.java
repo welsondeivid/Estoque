@@ -1,5 +1,6 @@
 package com.stock.product;
 
+import com.stock.compostion.CompositionService;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
@@ -13,6 +14,9 @@ public class ProductService {
 
     @Inject
     ProductRepository productRepository;
+
+    @Inject
+    CompositionService compositionService;
 
     public List<Product> listAll() {
         return productRepository.listAll();
@@ -46,6 +50,8 @@ public class ProductService {
     public void delete(String code) {
         Product product = productRepository.findByCode(code);
         if (product == null) throw new NotFoundException("Product not found");
+
+        compositionService.deleteByProductCode(code);
 
         productRepository.delete(product);
     }
