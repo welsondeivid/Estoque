@@ -22,6 +22,9 @@ boas práticas de arquitetura e APIs REST performáticas.
 A aplicação sobe em:<br>
 API: http://localhost:8080<br>
 
+Documentação base (Swagger)<br>
+http://localhost:8080/q/swagger-ui
+
 ## Front-end
 O front-end deste sistema está disponível em:<br>
 https://github.com/welsondeivid/stock-frontend
